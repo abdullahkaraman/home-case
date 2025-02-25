@@ -5,33 +5,53 @@
 
       <div class="form-group">
         <label for="email">E-mail:</label>
-        <input type="email" id="email" v-model="email" required />
+        <input type="email" id="email" v-model="credentials.Email" required />
       </div>
 
       <div class="form-group">
         <label for="password">Password:</label>
-        <input type="password" id="password" v-model="password" required />
+        <input type="password" id="password" v-model="credentials.Password" required />
       </div>
 
-      <button type="submit">Login</button>
+      <div v-if="store.getters['auth/getError']" class="error-message">
+        {{ store.getters['auth/getError'] }}
+      </div>
+
+      <button type="submit" :disabled="store.state.auth.loading">
+        {{ store.state.auth.loading ? 'Logging in...' : 'Login' }}
+      </button>
     </form>
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  name: 'LoginView',
-  data() {
-    return {
-      email: '',
-      password: '',
+<script setup lang="ts">
+import { reactive } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+
+const credentials = reactive({
+  Email: '',
+  Password: '',
+  GrantType: 'password',
+  Scope: 'amazon_data',
+  ClientId: import.meta.env.VITE_CLIENT_ID,
+  ClientSecret: import.meta.env.VITE_CLIENT_SECRET,
+  RedirectUri: import.meta.env.VITE_REDIRECT_URI,
+})
+
+const store = useStore()
+const router = useRouter()
+
+const handleLogin = async () => {
+  try {
+    await store.dispatch('auth/login', credentials)
+
+    if (store.getters['auth/isAuthenticated']) {
+      await router.push('/dashboard')
     }
-  },
-  methods: {
-    handleLogin() {
-      console.log('Login attempt:', this.email, this.password)
-    },
-  },
+  } catch (error) {
+    console.error('Giriş hatası:', error)
+  }
 }
 </script>
 
@@ -81,5 +101,11 @@ button {
 
 button:hover {
   background: #45a049;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 </style>

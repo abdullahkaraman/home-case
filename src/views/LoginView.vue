@@ -45,7 +45,6 @@ const router = useRouter()
 const handleLogin = async () => {
   try {
     await store.dispatch('auth/login', credentials)
-
     if (store.getters['auth/isAuthenticated']) {
       await router.push('/dashboard')
     }

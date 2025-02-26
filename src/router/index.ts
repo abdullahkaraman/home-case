@@ -5,6 +5,7 @@ import store from '@/store'
 import type { RouteLocation, NavigationGuardNext } from 'vue-router'
 const routes = [
   { path: '/', component: Login },
+  { path: '/login', component: Login },
   {
     path: '/dashboard',
     component: Dashboard,

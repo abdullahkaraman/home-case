@@ -3,10 +3,12 @@ import auth from './modules/auth'
 import sales from './modules/sales'
 import user from './modules/user'
 
-export default createStore({
+const store = createStore({
   modules: {
     auth,
     sales,
     user,
   },
 })
+
+export default store

@@ -11,23 +11,33 @@ export default {
   namespaced: true,
 
   state: (): SalesState => ({
-    dailySalesData: null,
+    dailySalesData: JSON.parse(localStorage.getItem('dailySalesData') || 'null'),
   }),
 
   mutations: {
     SET_DAILY_SALES_DATA(state: SalesState, data: DailySalesOverviewData) {
       state.dailySalesData = data
+      localStorage.setItem('dailySalesData', JSON.stringify(data))
+    },
+    CLEAR_SALES_DATA(state: SalesState) {
+      state.dailySalesData = null
+      localStorage.removeItem('dailySalesData')
     },
   },
 
   actions: {
     async fetchDailySalesOverview(
       { commit, rootState }: ActionContext<SalesState, RootState>,
-      day: number,
+      day: number = 7,
     ) {
       try {
-        const marketplace = rootState.auth.userInfo?.store?.[0]?.marketplaceName
-        const sellerId = rootState.auth.userInfo?.store?.[0]?.storeId
+        const marketplace = rootState.user.userInfo?.store?.[0]?.marketplaceName
+        const sellerId = rootState.user.userInfo?.store?.[0]?.storeId
+
+        if (!marketplace || !sellerId) {
+          console.warn('Marketplace or sellerId not found, sales data cannot be fetched')
+          return
+        }
 
         const payload = {
           marketplace: marketplace || 'Amazon',
@@ -38,7 +48,7 @@ export default {
         }
 
         const response = await api.post<DailySalesOverviewResponse>(
-          '/data/daily-sales-overview/',
+          '/data/daily-sales-overview',
           payload,
         )
 
@@ -49,6 +59,7 @@ export default {
         }
       } catch (error) {
         console.error('Failed to fetch daily sales overview:', error)
+        commit('CLEAR_SALES_DATA')
       }
     },
   },

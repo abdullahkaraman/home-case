@@ -4,8 +4,28 @@ import Dashboard from '@/views/DashboardView.vue'
 import store from '@/store'
 import type { RouteLocation, NavigationGuardNext } from 'vue-router'
 const routes = [
-  { path: '/', component: Login },
-  { path: '/login', component: Login },
+  {
+    path: '/',
+    component: Login,
+    beforeEnter: (to: RouteLocation, from: RouteLocation, next: NavigationGuardNext) => {
+      if (store.getters['auth/isAuthenticated']) {
+        next('/dashboard')
+      } else {
+        next()
+      }
+    },
+  },
+  {
+    path: '/login',
+    component: Login,
+    beforeEnter: (to: RouteLocation, from: RouteLocation, next: NavigationGuardNext) => {
+      if (store.getters['auth/isAuthenticated']) {
+        next('/dashboard')
+      } else {
+        next()
+      }
+    },
+  },
   {
     path: '/dashboard',
     component: Dashboard,

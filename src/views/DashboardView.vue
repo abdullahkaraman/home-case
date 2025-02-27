@@ -2,6 +2,10 @@
   <div class="dashboard">
     <div class="header">
       <h1>Dashboard</h1>
+      <div class="user-info" v-if="userInfo">
+        <p>Welcome {{ userInfo.firstName || '' }}</p>
+        <p>Email: {{ userInfo.email }}</p>
+      </div>
       <button @click="logout" class="logout-btn">Çıkış Yap</button>
     </div>
 
@@ -33,6 +37,12 @@ const store = useStore()
 const router = useRouter()
 
 const dailySales = computed(() => store.getters['sales/getDailySalesData'])
+const userInfo = computed(() => store.getters['user/getUserInfo'])
+const userEmail = computed(() => store.getters['auth/getUserEmail'])
+const isAuthenticated = computed(() => store.getters['auth/isAuthenticated'])
+
+console.log('🔥 User Info:', userInfo.value)
+console.log('🔥 User Email:', userEmail.value)
 
 const logout = async () => {
   await store.dispatch('auth/logout')
@@ -40,11 +50,10 @@ const logout = async () => {
 }
 
 onMounted(async () => {
-  if (!store.getters['auth/isAuthenticated']) {
+  if (!isAuthenticated.value) {
     router.push('/')
-  } else {
-    await store.dispatch('user/fetchUserInfo', { email: 'homework@eva.guru' })
-    await store.dispatch('sales/fetchDailySalesOverview', 30)
+  } else if (userEmail.value && !userInfo.value) {
+    await store.dispatch('user/fetchUserInfo', { email: userEmail.value })
   }
 })
 </script>
@@ -59,6 +68,15 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+
+.user-info {
+  text-align: center;
+  margin: 0 20px;
+}
+
+.user-info p {
+  margin: 5px 0;
 }
 
 .logout-btn {

@@ -9,6 +9,7 @@ export interface AuthState {
   loading: boolean
   error: string | null
   userInfo: UserInfo | null
+  userEmail: string | null
 }
 
 export default {
@@ -19,6 +20,7 @@ export default {
     loading: false,
     error: null,
     userInfo: null,
+    userEmail: null,
   }),
 
   mutations: {
@@ -32,6 +34,16 @@ export default {
     SET_ERROR(state: AuthState, error: string | null) {
       state.error = error
     },
+    SET_USER_EMAIL(state: AuthState, email: string) {
+      state.userEmail = email
+      localStorage.setItem('userEmail', email)
+    },
+    CLEAR_AUTH_DATA(state: AuthState) {
+      state.token = null
+      state.userEmail = null
+      localStorage.removeItem('token')
+      localStorage.removeItem('userEmail')
+    },
   },
 
   actions: {
@@ -43,6 +55,7 @@ export default {
         const response = await api.post<TokenResponse>('/oauth/token', credentials)
 
         commit('SET_TOKEN', response.data.Data.AccessToken)
+        commit('SET_USER_EMAIL', credentials.Email)
       } catch (error) {
         const err = error as AxiosError<{ ApiStatusMessage?: string }>
         commit('SET_ERROR', err.response?.data?.ApiStatusMessage || 'Login failed')
@@ -54,12 +67,10 @@ export default {
       commit('SET_LOADING', true)
       try {
         await api.post('/user/logout')
-
-        localStorage.removeItem('token')
-        commit('SET_TOKEN', null)
-        commit('SET_USER_INFO', null)
+        commit('CLEAR_AUTH_DATA')
       } catch (error) {
         console.error('Logout failed:', error)
+        commit('CLEAR_AUTH_DATA')
       } finally {
         commit('SET_LOADING', false)
       }
@@ -68,8 +79,9 @@ export default {
 
   getters: {
     isAuthenticated: (state: AuthState) => !!state.token,
-    getToken: (state: AuthState) => state.token,
+    getToken: (state: AuthState) => state.token || localStorage.getItem('token'),
     getError: (state: AuthState) => state.error,
     isLoading: (state: AuthState) => state.loading,
+    getUserEmail: (state: AuthState) => state.userEmail || localStorage.getItem('userEmail'),
   },
 }

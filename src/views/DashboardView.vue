@@ -9,22 +9,7 @@
       <button @click="logout" class="logout-btn">Çıkış Yap</button>
     </div>
 
-    <div v-if="dailySales">
-      <h2>Daily Sales Overview</h2>
-      <p>Currency: {{ dailySales.Currency }}</p>
-      <p>Is YOY Exist?: {{ dailySales.isYoyExist }}</p>
-
-      <div v-for="(item, index) in dailySales.item" :key="index" class="sales-item">
-        <hr />
-        <p>Date: {{ item.date }}</p>
-        <p>Amount: {{ item.amount }}</p>
-        <p>OrderCount: {{ item.orderCount }}</p>
-        <p>UnitCount: {{ item.unitCount }}</p>
-      </div>
-    </div>
-    <div v-else>
-      <p>Loading daily sales data...</p>
-    </div>
+    <SalesChart />
   </div>
 </template>
 
@@ -32,17 +17,14 @@
 import { onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import SalesChart from '@/components/SalesChart.vue'
 
 const store = useStore()
 const router = useRouter()
 
-const dailySales = computed(() => store.getters['sales/getDailySalesData'])
 const userInfo = computed(() => store.getters['user/getUserInfo'])
 const userEmail = computed(() => store.getters['auth/getUserEmail'])
 const isAuthenticated = computed(() => store.getters['auth/isAuthenticated'])
-
-console.log('🔥 User Info:', userInfo.value)
-console.log('🔥 User Email:', userEmail.value)
 
 const logout = async () => {
   await store.dispatch('auth/logout')

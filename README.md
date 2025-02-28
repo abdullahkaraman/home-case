@@ -31,7 +31,7 @@ npm run lint
 | [x]    | Vuex and Project Setup             |
 | [x]    | Authentication, Token Management   |
 | [x]    | Daily Sales Data API Integration   |
-| [ ]    | Sales Data with Chart (Highcharts) |
+| [x]    | Sales Data with Chart (Highcharts) |
 | [ ]    | SKU List & Date Selection Table    |
 | [ ]    | SKU Refund Rate Integration        |
 | [ ]    | UI Improvements & Error Checks     |

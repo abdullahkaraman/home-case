@@ -1,12 +1,17 @@
 <template>
-  <div class="dashboard">
-    <div class="header">
-      <h1>Dashboard</h1>
-      <div class="user-info" v-if="userInfo">
-        <p>Welcome {{ userInfo.firstName || '' }}</p>
-        <p>Email: {{ userInfo.email }}</p>
+  <div class="p-6">
+    <div class="flex justify-between items-center mb-5">
+      <h1 class="text-2xl font-bold">Dashboard</h1>
+      <div class="text-center mx-5" v-if="userInfo">
+        <p class="my-1">Welcome {{ userInfo.firstName || '' }}</p>
+        <p class="my-1">Email: {{ userInfo.email }}</p>
       </div>
-      <button @click="logout" class="logout-btn">Çıkış Yap</button>
+      <button
+        @click="logout"
+        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+      >
+        Çıkış Yap
+      </button>
     </div>
 
     <SalesChart />
@@ -39,43 +44,3 @@ onMounted(async () => {
   }
 })
 </script>
-
-<style scoped>
-.dashboard {
-  padding: 20px;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.user-info {
-  text-align: center;
-  margin: 0 20px;
-}
-
-.user-info p {
-  margin: 5px 0;
-}
-
-.logout-btn {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.logout-btn:hover {
-  background-color: #d32f2f;
-}
-
-.sales-item {
-  margin-bottom: 1rem;
-}
-</style>

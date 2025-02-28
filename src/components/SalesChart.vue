@@ -1,33 +1,46 @@
 <template>
-  <div class="sales-chart-container">
-    <div class="chart-controls">
-      <div class="date-selector">
-        <DropdownMenu>
+  <div class="w-full bg-white rounded-lg shadow-md p-4 mb-5">
+    <div class="flex justify-end items-center mb-4">
+      <div class="relative z-50 flex justify-end w-full">
+        <div
+          v-if="isLoading"
+          class="w-full h-[450px] bg-gray-100 rounded-lg flex items-center justify-center animate-pulse"
+        >
+          <div
+            class="w-16 h-16 border-4 border-gray-300 border-t-gray-500 rounded-full animate-spin"
+          ></div>
+        </div>
+        <DropdownMenu v-if="!isLoading">
           <DropdownMenuTrigger asChild>
-            <button class="dropdown-trigger">
-              <span>{{ selectedDays }} Gün</span>
-              <i class="dropdown-icon">▼</i>
+            <button
+              class="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 text-sm font-medium transition-colors"
+            >
+              <span>{{ selectedDays }} Days</span>
+              <i class="text-xs opacity-70">▼</i>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent
+            class="bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[120px]"
+          >
             <DropdownMenuItem
               v-for="option in dayOptions"
               :key="option"
               @click="changeDateRange(option)"
-              class="dropdown-item"
-              :class="{ 'active-item': selectedDays === option }"
+              class="px-3 py-2 text-sm cursor-pointer hover:bg-blue-50 transition-colors"
+              :class="{ 'bg-blue-50 text-blue-600 font-medium': selectedDays === option }"
             >
-              {{ option }} Gün
+              {{ option }} Days
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div v-if="isLoading" class="loading">Yükleniyor...</div>
     </div>
 
     <highcharts :options="chartOptions" v-if="!isLoading && hasData"></highcharts>
 
-    <div v-if="!isLoading && !hasData" class="no-data">Gösterilecek veri bulunamadı</div>
+    <div v-if="!isLoading && !hasData" class="text-center py-10 text-gray-500 text-base">
+      No data to show
+    </div>
   </div>
 </template>
 
@@ -47,35 +60,35 @@ import {
 Highcharts.setOptions({
   lang: {
     months: [
-      'Ocak',
-      'Şubat',
-      'Mart',
-      'Nisan',
-      'Mayıs',
-      'Haziran',
-      'Temmuz',
-      'Ağustos',
-      'Eylül',
-      'Ekim',
-      'Kasım',
-      'Aralık',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ],
     shortMonths: [
-      'Oca',
-      'Şub',
+      'Jan',
+      'Feb',
       'Mar',
-      'Nis',
+      'Apr',
       'May',
-      'Haz',
-      'Tem',
-      'Ağu',
-      'Eyl',
-      'Eki',
-      'Kas',
-      'Ara',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ],
-    weekdays: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'],
-    loading: 'Yükleniyor...',
+    weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    loading: 'Loading...',
     decimalPoint: ',',
     thousandsSep: '.',
   },
@@ -156,10 +169,10 @@ export default {
           },
         },
         title: {
-          text: 'Günlük Satış Grafiği',
+          text: 'Daily Sales Chart',
         },
         subtitle: {
-          text: `Son ${this.selectedDays} gün`,
+          text: `Last ${this.selectedDays} days`,
         },
         xAxis: {
           type: 'datetime',
@@ -186,7 +199,7 @@ export default {
         yAxis: [
           {
             title: {
-              text: 'Satış Tutarı',
+              text: 'Sales Amount',
               style: {
                 color: color1,
               },
@@ -194,7 +207,7 @@ export default {
           },
           {
             title: {
-              text: 'Sipariş Sayısı',
+              text: 'Order Count',
               style: {
                 color: color2,
               },
@@ -230,17 +243,17 @@ export default {
         series: [
           {
             type: 'column',
-            name: 'Satış Tutarı',
+            name: 'Sales Amount',
             data: salesData,
             color: color1,
             tooltip: {
-              valuePrefix: '₺ ',
+              valuePrefix: '$ ',
               valueDecimals: 2,
             },
           },
           {
             type: 'column',
-            name: 'Sipariş Sayısı',
+            name: 'Order Count',
             data: orderData,
             yAxis: 1,
             color: color2,
@@ -295,7 +308,7 @@ export default {
       try {
         await this.fetchSalesData(this.selectedDays)
       } catch (error) {
-        console.error('Satış verileri yüklenirken hata oluştu:', error)
+        console.error('Error loading sales data:', error)
       } finally {
         this.isLoading = false
       }
@@ -306,70 +319,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.sales-chart-container {
-  width: 100%;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 16px;
-  margin-bottom: 20px;
-}
-
-.chart-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.date-selector {
-  display: flex;
-  gap: 10px;
-  position: relative;
-  z-index: 50;
-}
-
-.dropdown-trigger {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 14px;
-  font-family: inherit;
-  color: inherit;
-  outline: none;
-}
-
-.dropdown-icon {
-  font-size: 0.8em;
-  opacity: 0.7;
-}
-
-.dropdown-item {
-  padding: 8px 12px;
-  cursor: pointer;
-  width: 100%;
-  text-align: left;
-}
-
-.active-item {
-  background-color: #e6f7ff;
-  color: #1976d2;
-  font-weight: 500;
-}
-
-.loading,
-.no-data {
-  text-align: center;
-  padding: 40px;
-  color: #666;
-  font-size: 16px;
-}
-</style>

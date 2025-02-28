@@ -1,23 +1,39 @@
 <template>
-  <div class="login-container">
-    <form @submit.prevent="handleLogin" class="login-form">
-      <h2>Login</h2>
+  <div class="flex justify-center items-center min-h-screen p-5">
+    <form @submit.prevent="handleLogin" class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+      <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
 
-      <div class="form-group">
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" v-model="credentials.Email" required />
+      <div class="mb-4">
+        <label for="email" class="block mb-2">E-mail:</label>
+        <input
+          type="email"
+          id="email"
+          v-model="credentials.Email"
+          required
+          class="w-full p-2 border border-gray-300 rounded"
+        />
       </div>
 
-      <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" v-model="credentials.Password" required />
+      <div class="mb-4">
+        <label for="password" class="block mb-2">Password:</label>
+        <input
+          type="password"
+          id="password"
+          v-model="credentials.Password"
+          required
+          class="w-full p-2 border border-gray-300 rounded"
+        />
       </div>
 
-      <div v-if="store.getters['auth/getError']" class="error-message">
+      <div v-if="store.getters['auth/getError']" class="text-red-500 mb-4 text-center">
         {{ store.getters['auth/getError'] }}
       </div>
 
-      <button type="submit" :disabled="store.state.auth.loading">
+      <button
+        type="submit"
+        :disabled="store.state.auth.loading"
+        class="w-full py-3 bg-green-500 text-white border-none rounded cursor-pointer hover:bg-green-600 disabled:opacity-70 disabled:cursor-not-allowed"
+      >
         {{ store.state.auth.loading ? 'Logging in...' : 'Login' }}
       </button>
     </form>
@@ -53,58 +69,3 @@ const handleLogin = async () => {
   }
 }
 </script>
-
-<style scoped>
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-}
-
-.login-form {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-button {
-  width: 100%;
-  padding: 0.75rem;
-  background: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #45a049;
-}
-
-.error-message {
-  color: red;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-</style>

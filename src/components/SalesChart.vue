@@ -141,23 +141,27 @@ export default {
         }
       }
 
-      const salesData: SalesDataPoint[] = this.salesData.item.map(
-        (item: DailySalesOverviewItem) => ({
-          x: parseDate(item.date),
-          y: item.amount,
-        }),
-      )
+      const fbaData: SalesDataPoint[] = this.salesData.item.map((item: DailySalesOverviewItem) => ({
+        x: parseDate(item.date),
+        y: item.fbaAmount || 0,
+      }))
 
-      const orderData: SalesDataPoint[] = this.salesData.item.map(
+      const fbmData: SalesDataPoint[] = this.salesData.item.map((item: DailySalesOverviewItem) => ({
+        x: parseDate(item.date),
+        y: item.fbmAmount || 0,
+      }))
+
+      const profitData: SalesDataPoint[] = this.salesData.item.map(
         (item: DailySalesOverviewItem) => ({
           x: parseDate(item.date),
-          y: item.orderCount,
+          y: item.profit || 0,
         }),
       )
 
       const colors = Highcharts.getOptions().colors || []
       const color1 = colors[0] ? colors[0].toString() : '#7cb5ec'
       const color2 = colors[1] ? colors[1].toString() : '#434348'
+      const color3 = colors[2] ? colors[2].toString() : '#90ed7d'
 
       return {
         chart: {
@@ -199,17 +203,17 @@ export default {
         yAxis: [
           {
             title: {
-              text: 'Sales Amount',
+              text: 'Sales',
               style: {
-                color: color1,
+                color: color3,
               },
             },
           },
           {
             title: {
-              text: 'Order Count',
+              text: 'Profit',
               style: {
-                color: color2,
+                color: color3,
               },
             },
             opposite: true,
@@ -219,9 +223,27 @@ export default {
           shared: true,
           useHTML: true,
           headerFormat: '<small>{point.key}</small><table>',
-          pointFormat:
-            '<tr><td style="color: {series.color}">{series.name}: </td>' +
-            '<td style="text-align: right"><b>{point.y}</b></td></tr>',
+          pointFormatter: function () {
+            let s = ''
+            if (this.series.name === 'Sales') {
+              s =
+                `<tr><td style="color: ${this.series.color}">${this.series.name}: </td>` +
+                `<td style="text-align: right"><b>${Highcharts.numberFormat(this.y || 0, 2)}</b></td></tr>`
+            } else if (this.series.name === 'Profit') {
+              s =
+                `<tr><td style="color: ${this.series.color}">${this.series.name}: </td>` +
+                `<td style="text-align: right"><b>${Highcharts.numberFormat(this.y || 0, 2)}</b></td></tr>`
+            } else if (this.series.name === 'FBA Sales') {
+              s =
+                `<tr><td style="color: ${this.series.color}">${this.series.name}: </td>` +
+                `<td style="text-align: right"><b>${Highcharts.numberFormat(this.y || 0, 2)}</b></td></tr>`
+            } else if (this.series.name === 'FBM Sales') {
+              s =
+                `<tr><td style="color: ${this.series.color}">${this.series.name}: </td>` +
+                `<td style="text-align: right"><b>${Highcharts.numberFormat(this.y || 0, 2)}</b></td></tr>`
+            }
+            return s
+          },
           footerFormat: '</table>',
           valueDecimals: 2,
         },
@@ -244,8 +266,18 @@ export default {
         series: [
           {
             type: 'column',
-            name: 'Sales Amount',
-            data: orderData,
+            name: 'Profit',
+            data: profitData,
+            color: color3,
+            tooltip: {
+              valuePrefix: '$ ',
+              valueDecimals: 2,
+            },
+          },
+          {
+            type: 'column',
+            name: 'FBA Sales',
+            data: fbaData,
             color: color1,
             tooltip: {
               valuePrefix: '$ ',
@@ -254,9 +286,13 @@ export default {
           },
           {
             type: 'column',
-            name: 'Order Count',
-            data: salesData,
+            name: 'FBM Sales',
+            data: fbmData,
             color: color2,
+            tooltip: {
+              valuePrefix: '$ ',
+              valueDecimals: 2,
+            },
           },
         ],
         responsive: {

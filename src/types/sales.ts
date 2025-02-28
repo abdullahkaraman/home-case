@@ -20,6 +20,9 @@ export interface DailySalesOverviewItem {
   profit: number
   yoy30DailySalesGrowth: number
   acos: number
+  fbaAmount: number
+  fbmAmount: number
+  fbaShippingAmount: number
 }
 
 export interface DailySalesOverviewData {

@@ -233,6 +233,7 @@ export default {
         },
         plotOptions: {
           column: {
+            stacking: 'normal',
             borderRadius: 3,
             pointPadding: 0.2,
             groupPadding: 0.1,
@@ -244,7 +245,7 @@ export default {
           {
             type: 'column',
             name: 'Sales Amount',
-            data: salesData,
+            data: orderData,
             color: color1,
             tooltip: {
               valuePrefix: '$ ',
@@ -254,8 +255,7 @@ export default {
           {
             type: 'column',
             name: 'Order Count',
-            data: orderData,
-            yAxis: 1,
+            data: salesData,
             color: color2,
           },
         ],

@@ -20,6 +20,11 @@ export default {
     CLEAR_USER_INFO(state: UserState) {
       state.userInfo = null
     },
+    SET_USER_EMAIL(state: UserState, email: string) {
+      if (state.userInfo) {
+        state.userInfo.email = email
+      }
+    },
   },
 
   actions: {
@@ -33,7 +38,6 @@ export default {
           credentials,
         )
         commit('SET_USER_INFO', response.data.Data.user)
-        commit('SET_USER_EMAIL', response.data.Data.user.email)
 
         await dispatch('sales/fetchDailySalesOverview', 7, { root: true })
 

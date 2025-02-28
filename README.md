@@ -2,6 +2,8 @@
 
 ## Setup
 
+Before running the project, copy the `.env.sample` file as `.env` and enter the necessary information (such as `API_URL`) into the `.env` file.
+
 ```sh
 npm install
 ```
@@ -10,18 +12,6 @@ npm install
 
 ```sh
 npm run dev
-```
-
-## Build
-
-```sh
-npm run build
-```
-
-## Code Quality
-
-```sh
-npm run lint
 ```
 
 ## Task Status

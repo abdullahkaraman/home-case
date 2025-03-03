@@ -22,6 +22,6 @@ npm run dev
 | [x]    | Authentication, Token Management   |
 | [x]    | Daily Sales Data API Integration   |
 | [x]    | Sales Data with Chart (Highcharts) |
-| [ ]    | SKU List & Date Selection Table    |
-| [ ]    | SKU Refund Rate Integration        |
+| [x]    | SKU List & Date Selection Table    |
+| [x]    | SKU Refund Rate Integration        |
 | [ ]    | UI Improvements & Error Checks     |

@@ -39,7 +39,7 @@ export default {
         )
         commit('SET_USER_INFO', response.data.Data.user)
 
-        await dispatch('sales/fetchDailySalesOverview', 7, { root: true })
+        await dispatch('sales/fetchDailySalesOverview', 30, { root: true })
 
         return response.data.Data.user
       } catch (error) {

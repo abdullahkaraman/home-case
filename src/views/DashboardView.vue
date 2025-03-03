@@ -14,7 +14,8 @@
       </button>
     </div>
 
-    <SalesChart />
+    <SalesChart :selectedDates="selectedDates" />
+    <SkuTable :selectedDates="selectedDates" />
   </div>
 </template>
 
@@ -23,13 +24,14 @@ import { onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import SalesChart from '@/components/SalesChart.vue'
-
+import SkuTable from '@/components/SkuTable.vue'
 const store = useStore()
 const router = useRouter()
 
 const userInfo = computed(() => store.getters['user/getUserInfo'])
 const userEmail = computed(() => store.getters['auth/getUserEmail'])
 const isAuthenticated = computed(() => store.getters['auth/isAuthenticated'])
+const selectedDates = computed(() => store.getters['sales/getSelectedDates'])
 
 const logout = async () => {
   await store.dispatch('auth/logout')

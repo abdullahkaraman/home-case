@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <highcharts :options="chartOptions" v-if="!isLoading && hasData"></highcharts>
+    <highcharts :options="chartOptions" v-if="!isLoading && hasData" ref="chartRef"></highcharts>
 
     <div v-if="!isLoading && !hasData" class="text-center py-10 text-gray-500 text-base">
       No data to show
@@ -110,9 +110,10 @@ export default {
   },
   data() {
     return {
-      selectedDays: 7,
+      selectedDays: 30,
       dayOptions: [7, 14, 30, 60],
       isLoading: false,
+      selectedPoints: [] as string[],
     }
   },
   computed: {
@@ -261,6 +262,12 @@ export default {
             groupPadding: 0.1,
             borderWidth: 0,
             shadow: false,
+            cursor: 'pointer',
+            point: {
+              events: {
+                click: this.handlePointClick,
+              },
+            },
           },
         },
         series: [
@@ -334,6 +341,7 @@ export default {
   methods: {
     ...mapActions({
       fetchSalesData: 'sales/fetchDailySalesOverview',
+      setSelectedDates: 'sales/setSelectedDates',
     }),
     async changeDateRange(days: number) {
       this.selectedDays = days
@@ -343,10 +351,55 @@ export default {
       this.isLoading = true
       try {
         await this.fetchSalesData(this.selectedDays)
+        this.selectedPoints = []
+        this.setSelectedDates([])
       } catch (error) {
         console.error('Error loading sales data:', error)
       } finally {
         this.isLoading = false
+      }
+    },
+    handlePointClick(event: Highcharts.PointClickEventObject) {
+      const clickedDate = new Date(event.point.x)
+
+      const year = clickedDate.getFullYear()
+      const month = String(clickedDate.getMonth() + 1).padStart(2, '0')
+      const day = String(clickedDate.getDate()).padStart(2, '0')
+      const formattedDate = `${year}-${month}-${day}`
+
+      const existingIndex = this.selectedPoints.findIndex((date: string) => date === formattedDate)
+
+      if (existingIndex !== -1) {
+        this.selectedPoints.splice(existingIndex, 1)
+      } else {
+        if (this.selectedPoints.length >= 2) {
+          this.selectedPoints.shift()
+        }
+        this.selectedPoints.push(formattedDate)
+      }
+
+      this.setSelectedDates([...this.selectedPoints])
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const chart = this.$refs.chartRef && (this.$refs.chartRef as any).chart
+      if (chart) {
+        chart.series.forEach((series: Highcharts.Series) => {
+          series.points.forEach((point: Highcharts.Point) => {
+            const pointDate = new Date(point.x)
+            const pointYear = pointDate.getFullYear()
+            const pointMonth = String(pointDate.getMonth() + 1).padStart(2, '0')
+            const pointDay = String(pointDate.getDate()).padStart(2, '0')
+            const formattedPointDate = `${pointYear}-${pointMonth}-${pointDay}`
+
+            point.update(
+              {
+                color: this.selectedPoints.includes(formattedPointDate) ? '#ff9900' : undefined,
+              },
+              false,
+            )
+          })
+        })
+        chart.redraw()
       }
     },
   },
